@@ -1,0 +1,5 @@
+{
+  "name": "ascii-globe",
+  "owner": { "name": "GustavWex" },
+  "plugins": [{ "name": "ascii-night-pond", "source": "./" }]
+}
