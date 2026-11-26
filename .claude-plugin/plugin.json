@@ -1,6 +1,6 @@
 {
   "name": "ascii-night-pond",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A halftone dot globe turning on a cobalt-indigo backdrop in the desktop app, reacting to what Claude is doing.",
   "types": "./types/index.d.ts"
 }
