@@ -30,7 +30,7 @@ In the desktop app, where `/plugin` does not run: click **+** next to the prompt
 
 ## Commands
 
-- `/globe-look grey` uses the dark grey of Claude's own dark theme, with the globe in warm greys.
+- `/globe-look grey` uses the dark grey of Claude's own dark theme, with the globe in neutral greys.
 - `/globe-look cobalt` uses a flat cobalt blue background.
 - `/globe-look` on its own swaps to the other look. Your choice is remembered across sessions.
 - `/globe-demo` plays through every state the globe reacts to, in about 40 seconds.

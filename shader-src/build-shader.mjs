@@ -5,7 +5,7 @@ const [src, sceneFile, out, look = 'cobalt'] = process.argv.slice(2)
 // Each look's field, sea, near land and far-side land, as 0 to 1 RGB.
 const PALETTES = {
   cobalt: { FIELD: '0.094, 0.133, 0.416', SEA: '0.36, 0.43, 0.84', LAND: '0.8, 0.84, 1.0', BACK: '0.47, 0.54, 0.88' },
-  grey: { FIELD: '0.149, 0.149, 0.141', SEA: '0.42, 0.41, 0.39', LAND: '0.87, 0.85, 0.81', BACK: '0.55, 0.53, 0.5' },
+  grey: { FIELD: '0.098, 0.098, 0.098', SEA: '0.4, 0.4, 0.4', LAND: '0.86, 0.86, 0.86', BACK: '0.53, 0.53, 0.53' },
 }
 const scene = readFileSync(sceneFile, 'utf8')
 const landSrc = scene.slice(scene.indexOf('const LAND'), scene.indexOf(']\n\nfunction inside'))

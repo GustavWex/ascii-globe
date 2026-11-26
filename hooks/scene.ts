@@ -323,23 +323,23 @@ export function turnSeconds(mode: Activity['mode']): number {
   return LOOKS[mode].turn
 }
 
-/** The two looks: the flat cobalt field, or the grey of Claude's own dark theme with a globe in warm greys. */
+/** The two looks: the flat cobalt field, or the grey of Claude's own dark theme with a globe in neutral greys. */
 export type { Look } from '../types'
 import type { Look } from '../types'
 
 // The glass over the backdrop behind the chat: exactly the field's flat colour, so it frosts without changing it.
-export const GLASS_TINTS: Record<Look, string> = { cobalt: '#18226a', grey: '#262624' }
+export const GLASS_TINTS: Record<Look, string> = { cobalt: '#18226a', grey: '#191919' }
 
 // The flat globe's cobalt colours and their grey counterparts.
 const GREY_OF: Record<string, string> = {
-  '#1f2c86': '#2a2a28',
-  '#18226a': '#262624',
-  '#121852': '#20201e',
-  '#3550d8': '#77736b',
-  '#4a5ac4': '#6b6862',
-  '#c9d2ff': '#dcd8cf',
-  '#a9b6ff': '#bdb8ae',
-  '#dfe4ff': '#e8e4dc',
+  '#1f2c86': '#1e1e1e',
+  '#18226a': '#191919',
+  '#121852': '#151515',
+  '#3550d8': '#707070',
+  '#4a5ac4': '#666666',
+  '#c9d2ff': '#dbdbdb',
+  '#a9b6ff': '#b8b8b8',
+  '#dfe4ff': '#e6e6e6',
 }
 
 /** The flat globe in a look: as drawn for cobalt, its blues swapped for greys for grey. */

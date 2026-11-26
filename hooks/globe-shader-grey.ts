@@ -241,7 +241,7 @@ const ground = picture(p => {
   const s = state.at(vec2(0, 0))
 
   // the field: one flat cobalt, the same as the glass over it
-  let color = vec3(0.149, 0.149, 0.141)
+  let color = vec3(0.098, 0.098, 0.098)
 
   const toolInk = pastel(session.hue)
   const alarm = session.alarm
@@ -263,8 +263,8 @@ const ground = picture(p => {
     const seed = mixBits(int(gx), int(gy))
     const tick = floor(time * 0.9 + seed * 7)
     const jitter = mixBits(int(gx + tick * 131), int(gy - tick * 71))
-    const sea = vec3(0.42, 0.41, 0.39)
-    const land = vec3(0.87, 0.85, 0.81)
+    const sea = vec3(0.4, 0.4, 0.4)
+    const land = vec3(0.86, 0.86, 0.86)
     let level = 0
     let tone = vec3(sea)
     let alpha = 0.7
@@ -287,7 +287,7 @@ const ground = picture(p => {
       const rim = smoothstep(0.93, 0.985, cr) * 0.2
       level = max(max(near, through), rim)
       const frontTone = vec3(mix(sea, land, front) * mix(0.55, 1, smoothstep(0.15, 0.8, near)))
-      tone = vec3(mix(frontTone, vec3(0.55, 0.53, 0.5), useBack))
+      tone = vec3(mix(frontTone, vec3(0.53, 0.53, 0.53), useBack))
       alpha = mix(clamp(near * 1.5, 0.3, 1), 0.58, useBack)
 
       // the lights: each patch of land has its own threshold; the busier Claude is, the more patches pass it
