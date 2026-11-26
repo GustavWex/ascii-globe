@@ -16,10 +16,12 @@ import type { Buffer } from 'claude-code/shader'
 
 const W = 1600
 const H = 1000
-const CX = 250
-const CY = 220
-const R = 215
+const CX = 215
+const CY = 190
+const R = 175
 const TILT = 0.35
+// How strongly the globe prints over the field, so it sits back like the nebula instead of standing out.
+const MUTE = 0.68
 // A character cell, and one pixel of a character, in points.
 const CW = 7.5
 const CH = 11
@@ -312,7 +314,7 @@ const ground = picture(p => {
     // lights take the tool's colour while Claude works, and a dim red after an error
     const warm = vec3(1.0, 0.86, 0.58)
     const lamp = vec3(mix(mix(warm, toolInk, 0.85), vec3(0.88, 0.45, 0.42), alarm))
-    color = vec3(mix(color, vec3(mix(tone, lamp, glow)), ink * max(alpha, glow)))
+    color = vec3(mix(color, vec3(mix(tone, lamp, glow)), ink * max(alpha * MUTE, glow * 0.85)))
   }
 
   // the nebula, toward the top right but clear of a side panel: a cloud of characters that grows larger and denser as
