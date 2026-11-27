@@ -1,6 +1,6 @@
 # ASCII Globe
 
-A dark backdrop theme for the Claude desktop app. A see-through 3D globe, typed out in ASCII characters, turns in the bottom-left corner and reacts to what Claude is doing:
+A dark backdrop theme for the Claude desktop app, on the flat dark grey of Claude's own dark theme. A see-through 3D globe, typed out in ASCII characters, turns in the bottom-left corner and reacts to what Claude is doing:
 
 - **At rest** the globe turns slowly and the land is dark.
 - **While Claude works** it turns faster and "city lights" switch on across the land, in the colour of the current tool (light blue for reading and searching, periwinkle for edits, mint for shell commands, violet for agents, amber for connectors).
@@ -30,18 +30,14 @@ In the desktop app, where `/plugin` does not run: click **+** next to the prompt
 
 ## Commands
 
-- `/globe-look grey` uses the dark grey of Claude's own dark theme, with the globe in neutral greys.
-- `/globe-look cobalt` uses a flat cobalt blue background.
-- `/globe-look` on its own swaps to the other look. Your choice is remembered across sessions.
 - `/globe-demo` plays through every state the globe reacts to, in about 40 seconds.
 
 ## Editing the shader
 
-`hooks/globe-shader.ts` and `hooks/globe-shader-grey.ts` are generated. Edit `shader-src/globe-shader.src.ts`, then rebuild both:
+`hooks/globe-shader.ts` is generated. Edit `shader-src/globe-shader.src.ts`, then rebuild it:
 
 ```
-node shader-src/build-shader.mjs shader-src/globe-shader.src.ts hooks/scene.ts hooks/globe-shader.ts cobalt
-node shader-src/build-shader.mjs shader-src/globe-shader.src.ts hooks/scene.ts hooks/globe-shader-grey.ts grey
+node shader-src/build-shader.mjs shader-src/globe-shader.src.ts hooks/scene.ts hooks/globe-shader.ts
 ```
 
 Apps that can't play shaders show a flat halftone version of the globe instead.

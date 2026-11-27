@@ -1,12 +1,9 @@
 // Fills LAND_ROWS in the shader source with the land bitmask, built from the outlines in scene.ts.
 import { readFileSync, writeFileSync } from 'node:fs'
 
-const [src, sceneFile, out, look = 'cobalt'] = process.argv.slice(2)
-// Each look's field, sea, near land and far-side land, as 0 to 1 RGB.
-const PALETTES = {
-  cobalt: { FIELD: '0.094, 0.133, 0.416', SEA: '0.36, 0.43, 0.84', LAND: '0.8, 0.84, 1.0', BACK: '0.47, 0.54, 0.88' },
-  grey: { FIELD: '0.098, 0.098, 0.098', SEA: '0.4, 0.4, 0.4', LAND: '0.86, 0.86, 0.86', BACK: '0.53, 0.53, 0.53' },
-}
+const [src, sceneFile, out] = process.argv.slice(2)
+// The field (Claude dark), sea, near land and far-side land, as 0 to 1 RGB.
+const PALETTE = { FIELD: '0.098, 0.098, 0.098', SEA: '0.4, 0.4, 0.4', LAND: '0.86, 0.86, 0.86', BACK: '0.53, 0.53, 0.53' }
 const scene = readFileSync(sceneFile, 'utf8')
 const landSrc = scene.slice(scene.indexOf('const LAND'), scene.indexOf(']\n\nfunction inside'))
 const LAND = eval(landSrc.slice(landSrc.indexOf('= [') + 2) + ']')
@@ -79,6 +76,6 @@ const glyphRows = RAMP.map(([, pattern]) => {
 const text = readFileSync(src, 'utf8')
   .replace('LAND_ROWS', `[\n  ${rows.join(',\n  ')},\n]`)
   .replace('GLYPH_ROWS', `[\n  ${glyphRows.join(',\n  ')},\n]`)
-  .replace(/PAL_(FIELD|SEA|LAND|BACK)/g, (_, k) => PALETTES[look][k])
+  .replace(/PAL_(FIELD|SEA|LAND|BACK)/g, (_, k) => PALETTE[k])
 writeFileSync(out, text)
 console.log('land cells', landCells, 'of', 128 * 64, 'chars', text.length)

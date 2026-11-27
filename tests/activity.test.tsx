@@ -45,7 +45,7 @@ test('the backdrop draws the globe on the desktop', async ($, on) => {
   on('theme.set', () => ({ value: { isDrawn: true, requestId: 'test' } }))
   await $.session.start({ cwd: '/', surface: 'desktop', isInteractive: true })
 
-  const ui = await $.ui.mount({ plugin: 'ascii-night-pond', component: 'Backdrop', surface: 'desktop', props: { scene: 'cobalt-globe', plugin: 'ascii-night-pond', glass: false } })
+  const ui = await $.ui.mount({ plugin: 'ascii-night-pond', component: 'Backdrop', surface: 'desktop', props: { scene: 'ascii-globe', plugin: 'ascii-night-pond', glass: false } })
   const svg = await ui.find({ type: 'Svg' })
   expect(svg).toBeDefined()
   await ui.unmount()

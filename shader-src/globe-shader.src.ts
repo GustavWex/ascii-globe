@@ -1,4 +1,4 @@
-// Cobalt Globe, in 3D: a see-through globe in the bottom-left corner of a cobalt-indigo field, typed out in ASCII.
+// ASCII Globe, in 3D: a see-through globe in the bottom-left corner of a flat dark grey field, typed out in ASCII.
 // The window over the globe is a grid of character cells; each cell reads the turning sphere at its centre (land or sea,
 // how squarely it faces the viewer, with a slow grain) and prints the character of that weight from a ramp, so the
 // globe shades smoothly from heavy land to faint sea and off toward the rim. Through the near side's sea the far side's
@@ -166,7 +166,7 @@ const ground = picture(p => {
   const aa = max(p.px / z, 0.6)
   const s = state.at(vec2(0, 0))
 
-  // the field: one flat cobalt, the same as the glass over it
+  // the field: one flat dark grey, the same as the glass over it
   let color = vec3(PAL_FIELD)
 
   const toolInk = pastel(session.hue)

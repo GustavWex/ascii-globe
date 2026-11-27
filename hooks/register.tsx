@@ -1,10 +1,10 @@
 import { atom, read, update } from 'claude-code'
 import type { EngineInterface, Register, ThemeSetArgs } from 'claude-code'
 
-import type { Activity, Gauge, Look } from '../types'
-import { GLASS_TINTS, cobaltGlobeSvg, inLook, turnSeconds } from './scene'
+import type { Activity, Gauge } from '../types'
+import { GLASS_TINT, globeSvg, turnSeconds } from './scene'
 
-const SCENE_ID = 'cobalt-globe'
+const SCENE_ID = 'ascii-globe'
 const NO_READING: Gauge = { segments: [] }
 // What the demo shows on the gauge: a session well into its window.
 const DEMO_GAUGE: Gauge = {
@@ -18,18 +18,7 @@ const activity = atom({ plugin: 'ascii-night-pond', key: 'activity' } as const, 
   shape: 'activity-1',
 })
 const gauge = atom({ plugin: 'ascii-night-pond', key: 'gauge' } as const, NO_READING, { shape: 'gauge-1' })
-const look = atom({ plugin: 'ascii-night-pond', key: 'look' } as const, 'cobalt' as Look, { shape: 'look-1' })
-const LOOK_KEY = 'look'
-
-function themeOf(l: Look): ThemeSetArgs {
-  return { overrideColorScheme: 'dark', backdrop: { scene: SCENE_ID, glass: { blur: 14, tint: GLASS_TINTS[l], opacity: 0.55 } } }
-}
-
-function asLook(v: unknown): Look | undefined {
-  if (typeof v !== 'string') return undefined
-  const w = v.trim().toLowerCase()
-  return w === 'grey' || w === 'gray' ? 'grey' : w === 'cobalt' || w === 'blue' ? 'cobalt' : undefined
-}
+const THEME: ThemeSetArgs = { overrideColorScheme: 'dark', backdrop: { scene: SCENE_ID, glass: { blur: 14, tint: GLASS_TINT, opacity: 0.55 } } }
 
 // Where the globe is in its turn, so a redraw carries on from there instead of jumping: the flat globe takes it as its
 // starting point, and the 3D one as where to start again if the app restarts its shader.
@@ -55,7 +44,7 @@ async function quietly($: EngineInterface, work: () => Promise<unknown>): Promis
   try {
     await work()
   } catch (error) {
-    $.ui.log(`cobalt globe: ${String(error)}`)
+    $.ui.log(`ascii globe: ${String(error)}`)
   }
 }
 
@@ -87,20 +76,12 @@ async function refreshGauge($: EngineInterface): Promise<void> {
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     await quietly($, () => update($, activity, () => ({ mode: 'idle', tool: '', ping: 0 })))
-    let chosen: Look = 'cobalt'
-    await quietly($, async () => {
-      chosen = asLook(await $.store.get(LOOK_KEY)) ?? 'cobalt'
-      await update($, look, () => chosen)
-    })
-    const set = await $.theme.set(themeOf(chosen))
+    const set = await $.theme.set(THEME)
     if (!set.isDrawn) {
-      $.ui.log(`cobalt globe: not drawn (${set.reason})`)
+      $.ui.log(`ascii globe: not drawn (${set.reason})`)
     }
     await quietly($, () =>
-      $.command.register({ name: 'globe-demo', description: 'Play every state the Cobalt Globe theme reacts to, in about 40 seconds' }),
-    )
-    await quietly($, () =>
-      $.command.register({ name: 'globe-look', description: 'Switch the globe backdrop between cobalt and grey (Claude dark): /globe-look grey, /globe-look cobalt' }),
+      $.command.register({ name: 'globe-demo', description: 'Play every state the ASCII Globe theme reacts to, in about 40 seconds' }),
     )
     const answered = await next(e)
     await refreshGauge($)
@@ -138,15 +119,6 @@ export const register: Register = on => {
     return { text: 'Globe demo started: watch the globe and the nebula at the top right for about 40 seconds. The status line names each state.' }
   })
 
-  // Switches the look and remembers it for later sessions; with no word, it swaps to the other one.
-  on('command.run', { command: 'globe-look' }, async ($, e) => {
-    const was = await read($, look)
-    const next: Look = asLook(e.args) ?? (was === 'grey' ? 'cobalt' : 'grey')
-    await quietly($, () => $.store.set(LOOK_KEY, next))
-    await quietly($, () => update($, look, () => next))
-    await $.theme.set(themeOf(next))
-    return { text: next === 'grey' ? 'Globe backdrop: grey, as in Claude dark. /globe-look cobalt brings the blue back.' : 'Globe backdrop: cobalt. /globe-look grey for the Claude dark grey.' }
-  })
 
   // The main loop only: a subagent's turns don't change the globe's mood.
   on('turn.start', async ($, e, next) => {
@@ -176,7 +148,6 @@ export const register: Register = on => {
     }
     const now = await read($, activity)
     const reading = await read($, gauge)
-    const worn = await read($, look)
     // One wave per new tool call, and at most one every 1.5 s, so a burst of calls never flickers.
     let ping = false
     if (now.ping !== lastPing) {
@@ -193,23 +164,16 @@ export const register: Register = on => {
     // which never changes, so a new activity or reading only changes the shader's values and nothing restarts.
     if (Shader !== undefined) {
       const values = shaderValues(now, pingToggle, reading)
-      if (worn === 'grey') {
-        return (
-          <Shader module="./globe-shader-grey.ts" values={values}>
-            <Svg source={STILL.grey} alt="An ASCII globe and a context nebula on a dark grey field" isInteractive />
-          </Shader>
-        )
-      }
       return (
         <Shader module="./globe-shader.ts" values={values}>
-          <Svg source={STILL.cobalt} alt="An ASCII globe and a context nebula on a cobalt field" isInteractive />
+          <Svg source={STILL} alt="An ASCII globe and a context nebula on a dark grey field" isInteractive />
         </Shader>
       )
     }
     return (
       <Svg
-        source={inLook(cobaltGlobeSvg(now, phaseNow(now.mode), ping, reading), worn)}
-        alt={`A halftone globe and a context gauge on a ${worn === 'grey' ? 'dark grey' : 'cobalt'} field`}
+        source={globeSvg(now, phaseNow(now.mode), ping, reading)}
+        alt="A halftone globe and a context gauge on a dark grey field"
         isInteractive
       />
     )
@@ -217,8 +181,7 @@ export const register: Register = on => {
 }
 
 // The still beneath the shader: the flat globe and an empty gauge, made once.
-const STILL_COBALT = cobaltGlobeSvg({ mode: 'idle', tool: '', ping: 0 }, 0, false, NO_READING)
-const STILL: Record<Look, string> = { cobalt: STILL_COBALT, grey: inLook(STILL_COBALT, 'grey') }
+const STILL = globeSvg({ mode: 'idle', tool: '', ping: 0 }, 0, false, NO_READING)
 
 /** A tool's hue round the colour wheel, 0 to 1, by what kind of work it does; the shader makes a pale pastel of it. */
 function toolHue(tool: string): number {

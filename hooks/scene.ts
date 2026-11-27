@@ -1,4 +1,4 @@
-// Cobalt Globe: a halftone dot globe turning in the bottom-left corner of a muted cobalt-indigo field.
+// ASCII Globe: a halftone dot globe turning in the bottom-left corner of a flat dark grey field (Claude dark).
 // The globe is a fixed screen of dots, as a print would be: small sea dots stay put, and the land dots of
 // FRAMES views of the turning earth fade one into the next. What Claude is doing sets how fast it turns,
 // whether a ring of dots orbits it, the ring's colour, and a single soft ping on each tool call.
@@ -135,12 +135,12 @@ const BODY = (() => {
   return (
     `<defs>` +
     `<linearGradient id="cg-field" x1="0" y1="1" x2="1" y2="0">` +
-    `<stop offset="0" stop-color="#1f2c86"/><stop offset="0.55" stop-color="#18226a"/><stop offset="1" stop-color="#121852"/>` +
+    `<stop offset="0" stop-color="#1e1e1e"/><stop offset="0.55" stop-color="#191919"/><stop offset="1" stop-color="#151515"/>` +
     `</linearGradient>` +
-    `<radialGradient id="cg-halo"><stop offset="0.45" stop-color="#3550d8" stop-opacity="0.32"/>` +
-    `<stop offset="1" stop-color="#3550d8" stop-opacity="0"/></radialGradient>` +
+    `<radialGradient id="cg-halo"><stop offset="0.45" stop-color="#707070" stop-opacity="0.32"/>` +
+    `<stop offset="1" stop-color="#707070" stop-opacity="0"/></radialGradient>` +
     `</defs>` +
-    `<rect width="${W}" height="${H}" fill="#18226a"/>` +
+    `<rect width="${W}" height="${H}" fill="#191919"/>` +
     `<g class="globe">${dots(sea, 'sea')}${frames}</g>`
   )
 })()
@@ -158,8 +158,8 @@ function extras(ping: boolean): string {
 /** What each activity looks like: how long a turn of the globe takes, and the ring's colour. */
 const LOOKS: Record<Activity['mode'], { turn: number; ring?: string; halo: number }> = {
   idle: { turn: 40, halo: 0.55 },
-  working: { turn: 16, ring: '#a9b6ff', halo: 0.8 },
-  tool: { turn: 16, ring: '#a9b6ff', halo: 0.85 },
+  working: { turn: 16, ring: '#b8b8b8', halo: 0.8 },
+  tool: { turn: 16, ring: '#b8b8b8', halo: 0.85 },
   error: { turn: 40, ring: '#e08a86', halo: 0.5 },
 }
 
@@ -170,7 +170,7 @@ export function toolColor(tool: string): string {
   if (/^(Bash|PowerShell|Monitor)$/.test(tool)) return '#86dcbc'
   if (/^(Agent|Task|SendMessage)$/.test(tool)) return '#c3a8ff'
   if (tool.startsWith('mcp__')) return '#f0c88a'
-  return '#a9b6ff'
+  return '#b8b8b8'
 }
 
 function style(activity: Activity, phase: number, ping: boolean): string {
@@ -178,8 +178,8 @@ function style(activity: Activity, phase: number, ping: boolean): string {
   const turn = look.turn
   const ring = activity.mode === 'tool' ? toolColor(activity.tool) : look.ring
   let rules = `
-.sea { stroke: #4a5ac4; stroke-linecap: round; opacity: 0.55; }
-.land { stroke: #c9d2ff; stroke-linecap: round; }
+.sea { stroke: #666666; stroke-linecap: round; opacity: 0.55; }
+.land { stroke: #dbdbdb; stroke-linecap: round; }
 .fr { opacity: 0; animation: cg-frame ${turn}s linear infinite; }
 .fr0 { opacity: 1; }
 @keyframes cg-frame { 0% { opacity: 0; } ${r2(100 / FRAMES)}% { opacity: 1; } ${r2(200 / FRAMES)}% { opacity: 0; } 100% { opacity: 0; } }
@@ -200,7 +200,7 @@ function style(activity: Activity, phase: number, ping: boolean): string {
 `
   }
   if (ping) {
-    rules += `.ping { fill: none; stroke: ${ring ?? '#a9b6ff'}; stroke-width: 2; stroke-dasharray: 0.1 12; stroke-linecap: round; opacity: 0;
+    rules += `.ping { fill: none; stroke: ${ring ?? '#b8b8b8'}; stroke-width: 2; stroke-dasharray: 0.1 12; stroke-linecap: round; opacity: 0;
   transform-box: fill-box; transform-origin: center; animation: cg-ping 2.6s ease-out 1 forwards; }
 @keyframes cg-ping { 0% { opacity: 0.6; transform: scale(1.02); } 100% { opacity: 0; transform: scale(1.55); } }
 `
@@ -219,14 +219,14 @@ const GAUGE_R = 120
 
 /** The colour each kind of context is drawn in, by the name /context gives its row. */
 function segmentColor(name: string): string {
-  if (/messages/i.test(name)) return '#c9d2ff'
+  if (/messages/i.test(name)) return '#dbdbdb'
   if (/system prompt/i.test(name)) return '#8fd0f0'
   if (/system tools|tools/i.test(name) && !/mcp/i.test(name)) return '#86dcbc'
   if (/mcp/i.test(name)) return '#f0c88a'
   if (/memory/i.test(name)) return '#c3a8ff'
   if (/skill/i.test(name)) return '#e8a6c8'
   if (/agent/i.test(name)) return '#a8dca0'
-  return '#a9b6ff'
+  return '#b8b8b8'
 }
 
 function esc(text: string): string {
@@ -247,7 +247,7 @@ function gaugeSvg(gauge: Gauge): string {
     for (let k = 0; k < n && colors.length < 100; k += 1) colors.push(segmentColor(name))
   }
   const filled = gauge.percent === undefined ? 0 : Math.min(100, Math.round(gauge.percent))
-  while (colors.length < filled) colors.push('#c9d2ff')
+  while (colors.length < filled) colors.push('#dbdbdb')
   const byColor = new Map<string, string>()
   let faint = ''
   for (let i = 0; i < 100; i += 1) {
@@ -255,7 +255,7 @@ function gaugeSvg(gauge: Gauge): string {
     const outer = GAUGE_R + (i % 10 === 0 ? 16 : 10)
     const d = `M${r2(MAP_X + Math.cos(a) * GAUGE_R)} ${r2(MAP_Y + Math.sin(a) * GAUGE_R)}L${r2(MAP_X + Math.cos(a) * outer)} ${r2(MAP_Y + Math.sin(a) * outer)}`
     if (i < filled) {
-      const c = colors[i] ?? '#c9d2ff'
+      const c = colors[i] ?? '#dbdbdb'
       byColor.set(c, (byColor.get(c) ?? '') + d)
     } else {
       faint += d
@@ -297,17 +297,17 @@ function gaugeSvg(gauge: Gauge): string {
 
 const GAUGE_STYLE = `
 .gauge path { fill: none; stroke-linecap: round; }
-.g-faint { stroke: #a9b6ff; stroke-width: 1.6; opacity: 0.2; }
+.g-faint { stroke: #b8b8b8; stroke-width: 1.6; opacity: 0.2; }
 .g-tick { stroke-width: 2.2; opacity: 0.9; }
 .g-compact { stroke: #f0c88a; stroke-width: 1.4; stroke-dasharray: 3 3; opacity: 0.8; }
-.g-ring { fill: none; stroke: #a9b6ff; stroke-width: 1; stroke-dasharray: 1 5; opacity: 0.35; }
-.gauge text { font-family: ui-monospace, Menlo, Consolas, monospace; fill: #dfe4ff; }
+.g-ring { fill: none; stroke: #b8b8b8; stroke-width: 1; stroke-dasharray: 1 5; opacity: 0.35; }
+.gauge text { font-family: ui-monospace, Menlo, Consolas, monospace; fill: #e6e6e6; }
 .g-big { font-size: 34px; opacity: 0.92; }
 .g-small { font-size: 11px; opacity: 0.6; letter-spacing: 1px; }
 `
 
 /** The whole scene for one activity. `phase` (0 to 1) is how far round the globe has turned; `gauge` is the context reading. */
-export function cobaltGlobeSvg(activity: Activity, phase: number, ping: boolean, gauge: Gauge): string {
+export function globeSvg(activity: Activity, phase: number, ping: boolean, gauge: Gauge): string {
   return (
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMinYMax slice">` +
     `<style>${style(activity, phase, ping)}${GAUGE_STYLE}</style>` +
@@ -323,26 +323,5 @@ export function turnSeconds(mode: Activity['mode']): number {
   return LOOKS[mode].turn
 }
 
-/** The two looks: the flat cobalt field, or the grey of Claude's own dark theme with a globe in neutral greys. */
-export type { Look } from '../types'
-import type { Look } from '../types'
-
 // The glass over the backdrop behind the chat: exactly the field's flat colour, so it frosts without changing it.
-export const GLASS_TINTS: Record<Look, string> = { cobalt: '#18226a', grey: '#191919' }
-
-// The flat globe's cobalt colours and their grey counterparts.
-const GREY_OF: Record<string, string> = {
-  '#1f2c86': '#1e1e1e',
-  '#18226a': '#191919',
-  '#121852': '#151515',
-  '#3550d8': '#707070',
-  '#4a5ac4': '#666666',
-  '#c9d2ff': '#dbdbdb',
-  '#a9b6ff': '#b8b8b8',
-  '#dfe4ff': '#e6e6e6',
-}
-
-/** The flat globe in a look: as drawn for cobalt, its blues swapped for greys for grey. */
-export function inLook(svg: string, look: Look): string {
-  return look === 'cobalt' ? svg : svg.replace(/#[0-9a-f]{6}/gi, c => GREY_OF[c.toLowerCase()] ?? c)
-}
+export const GLASS_TINT = '#191919'
